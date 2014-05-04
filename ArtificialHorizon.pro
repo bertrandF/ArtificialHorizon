@@ -20,3 +20,6 @@ HEADERS  += mainwindow.h \
     artificialhorizon.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    resources.qrc

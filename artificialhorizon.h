@@ -22,17 +22,26 @@
 #define ARTIFICIALHORIZON_H
 
 #include <QWidget>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 
-class artificialHorizon : public QWidget
+class ArtificialHorizon : public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit artificialHorizon(QWidget *parent = 0);
+    explicit ArtificialHorizon(QWidget *parent = 0);
 
 signals:
 
 public slots:
+    void    setRoll(double roll);
 
+private:
+    QGraphicsScene scene;
+    QGraphicsPixmapItem back;
+    QGraphicsPixmapItem inside;
+    QGraphicsPixmapItem foreground;
 };
 
 #endif // ARTIFICIALHORIZON_H

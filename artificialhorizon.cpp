@@ -20,7 +20,34 @@
 
 #include "artificialhorizon.h"
 
-artificialHorizon::artificialHorizon(QWidget *parent) :
-    QWidget(parent)
+ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
+    QGraphicsView(parent)
 {
+    this->setScene(&(this->scene));
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    // Background
+    this->back.setPixmap(QPixmap(":/images/background.png")\
+                .scaled(QSize(200,200)));
+    this->scene.addItem(&(this->back));
+
+    // Inside
+    this->inside.setPixmap(QPixmap(":/images/inside.png")\
+                           .scaled(QSize(500/3,500/3)));
+    this->inside.setPos(100-500/6,100-500/6);
+    this->inside.setTransformOriginPoint(500/6,500/6);
+    this->inside.setRotation(0);
+    this->scene.addItem(&(this->inside));
+
+    // Foreground
+    this->foreground.setPixmap(QPixmap(":/images/foreground.png")\
+                               .scaled(QSize(500/3,500/3)));
+    this->foreground.setPos(100-500/6,100-500/6);
+    this->scene.addItem(&(this->foreground));
+}
+
+void ArtificialHorizon::setRoll(double roll)
+{
+    this->inside.setRotation(roll);
 }
