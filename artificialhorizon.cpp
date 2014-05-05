@@ -20,34 +20,47 @@
 
 #include "artificialhorizon.h"
 
+#define WIDGETSIZE  (200)
+
 ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
-    QGraphicsView(parent)
+    QGraphicsView(parent),
+    roll(0)
 {
-    this->setScene(&(this->scene));
+    double scale;
+
+    // Set Geometry, init configuration
+    this->setGeometry(0, 0, WIDGETSIZE, WIDGETSIZE);
+    this->setScene(new QGraphicsScene(this));
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    // Background
-    this->back.setPixmap(QPixmap(":/images/background.png")\
-                .scaled(QSize(200,200)));
-    this->scene.addItem(&(this->back));
+    // Open images, get scale factor
+    QPixmap foreground = QPixmap(":/images/foreground.png");
+    scale = foreground.size().width() / WIDGETSIZE;
+    QPixmap background = QPixmap(":/images/background.png");
 
-    // Inside
-    this->inside.setPixmap(QPixmap(":/images/inside.png")\
-                           .scaled(QSize(500/3,500/3)));
-    this->inside.setPos(100-500/6,100-500/6);
-    this->inside.setTransformOriginPoint(500/6,500/6);
-    this->inside.setRotation(0);
-    this->scene.addItem(&(this->inside));
-
-    // Foreground
-    this->foreground.setPixmap(QPixmap(":/images/foreground.png")\
-                               .scaled(QSize(500/3,500/3)));
-    this->foreground.setPos(100-500/6,100-500/6);
-    this->scene.addItem(&(this->foreground));
+    // Setup Graphics view items
+    this->back.setPixmap(background.scaled(background.size()/scale));
+    this->back.setTransformOriginPoint(background.width()/2, background.height()/2);
+    this->foreground.setPixmap(foreground.scaled(QSize(WIDGETSIZE,WIDGETSIZE)));
 }
 
 void ArtificialHorizon::setRoll(double roll)
 {
-    this->inside.setRotation(roll);
+    this->roll = roll;
+    this->scene()->invalidate();
+}
+
+void ArtificialHorizon::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    painter->rotate(this->roll);
+    painter->drawPixmap(QPoint(-100,-100), this->back.pixmap(),
+                        QRect(QPoint(133,133), QPoint(333,333)));
+}
+
+void ArtificialHorizon::drawForeground(QPainter *painter, const QRectF &rect)
+{
+    painter->drawPixmap(-100,-100, this->foreground.pixmap());
+    QGraphicsView::drawForeground(painter, rect);
 }

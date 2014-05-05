@@ -37,11 +37,15 @@ signals:
 public slots:
     void    setRoll(double roll);
 
+protected:
+    void drawBackground(QPainter *painter, const QRectF &rect);
+    void drawForeground(QPainter *painter, const QRectF &rect);
+
 private:
-    QGraphicsScene scene;
     QGraphicsPixmapItem back;
-    QGraphicsPixmapItem inside;
     QGraphicsPixmapItem foreground;
+
+    double roll;
 };
 
 #endif // ARTIFICIALHORIZON_H
