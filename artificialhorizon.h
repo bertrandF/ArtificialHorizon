@@ -21,9 +21,8 @@
 #ifndef ARTIFICIALHORIZON_H
 #define ARTIFICIALHORIZON_H
 
-#include <QWidget>
 #include <QGraphicsView>
-#include <QGraphicsScene>
+#include <QSize>
 #include <QGraphicsPixmapItem>
 
 class ArtificialHorizon : public QGraphicsView
@@ -43,6 +42,7 @@ protected:
     void drawForeground(QPainter *painter, const QRectF &rect);
 
 private:
+    QSize backSize;
     QGraphicsPixmapItem back;
     QGraphicsPixmapItem foreground;
 

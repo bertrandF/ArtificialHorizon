@@ -52,6 +52,7 @@ private:
     ArtificialHorizon *h;
 
     QPoint mousePos;
+    double prevPitch, prevRoll;
 };
 
 #endif // MAINWINDOW_H

@@ -40,9 +40,10 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     QPixmap foreground = QPixmap(":/images/foreground.png");
     scale = foreground.size().width() / WIDGETSIZE;
     QPixmap background = QPixmap(":/images/background.png");
+    this->backSize = background.size();
 
     // Setup Graphics view items
-    this->back.setPixmap(background.scaled(background.size()/scale));
+    this->back.setPixmap(background);
     this->back.setTransformOriginPoint(background.width()/2, background.height()/2);
     this->foreground.setPixmap(foreground.scaled(QSize(WIDGETSIZE,WIDGETSIZE)));
 }
@@ -55,16 +56,20 @@ void ArtificialHorizon::setRoll(double roll)
 
 void ArtificialHorizon::setPitch(double pitch)
 {
-    this->pitch = pitch;
-    this->scene()->invalidate();
+    if(pitch < this->backSize.height()/2-WIDGETSIZE)
+    {
+        this->pitch = pitch;
+        this->scene()->invalidate();
+    }
 }
 
 void ArtificialHorizon::drawBackground(QPainter *painter, const QRectF &rect)
 {
     painter->rotate(this->roll);
     painter->translate(QPointF(0, this->pitch));
-    painter->drawPixmap(QPoint(-100,-100), this->back.pixmap(),
-                        QRect(QPoint(133,133), QPoint(333,333)));
+    painter->drawPixmap(
+                QPoint(-this->backSize.width()/2, -this->backSize.height()/2),
+                this->back.pixmap());
 }
 
 void ArtificialHorizon::drawForeground(QPainter *painter, const QRectF &rect)

@@ -18,6 +18,8 @@
  *
  * */
 
+#include <cmath>
+
 #include <QThread>
 #include <QMouseEvent>
 
@@ -32,7 +34,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     //state(0),
     roll(11),
-    mousePos(QPoint(0,0))
+    mousePos(QPoint(0,0)),
+    prevPitch(0),
+    prevRoll(0)
 {
     ui->setupUi(this);
     this->h = new ArtificialHorizon(this->ui->centralWidget);
@@ -70,7 +74,27 @@ MainWindow::~MainWindow()
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    this->h->setRoll(event->pos().x());
-    this->h->setPitch(event->pos().y());
+    int pitch = event->pos().y();
+    int roll  = event->pos().x();
+
+    if(std::abs(pitch) >= 180) return;
+    if(std::abs(roll)  >= 180) return;
+
+    if(pitch > 0)
+    {
+        if(pitch > 90)
+            roll = 180-roll;
+        pitch = -2 * (int)(pitch/90) * (pitch-90) + pitch;
+    }
+    else
+    {
+        if(pitch < -90)
+            roll = 180-roll;
+        pitch = -2 * (int)(std::abs(pitch)/90) * (pitch+90) + pitch;
+    }
+
+
+    this->h->setRoll(roll);
+    this->h->setPitch(pitch);
     QMainWindow::mouseMoveEvent(event);
 }
