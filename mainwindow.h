@@ -39,14 +39,19 @@ public:
     ~MainWindow();
 
 public slots:
-    void timedOut();
+    //void timedOut();
+
+protected:
+    void mouseMoveEvent(QMouseEvent *event);
 
 private:
     Ui::MainWindow *ui;
-    QTimer timer;
-    int state;
+    //QTimer timer;
+    //int state;
     double roll;
     ArtificialHorizon *h;
+
+    QPoint mousePos;
 };
 
 #endif // MAINWINDOW_H

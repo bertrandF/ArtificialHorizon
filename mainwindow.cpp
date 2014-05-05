@@ -19,6 +19,7 @@
  * */
 
 #include <QThread>
+#include <QMouseEvent>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -29,16 +30,17 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    state(0),
-    roll(11)
+    //state(0),
+    roll(11),
+    mousePos(QPoint(0,0))
 {
     ui->setupUi(this);
     this->h = new ArtificialHorizon(this->ui->centralWidget);
     h->show();
 
-    connect(&(this->timer), SIGNAL(timeout()), this, SLOT(timedOut()));
-    timer.setInterval(TIMEOUT);
-    timer.start();
+    //connect(&(this->timer), SIGNAL(timeout()), this, SLOT(timedOut()));
+    //timer.setInterval(TIMEOUT);
+    //timer.start();
 }
 
 MainWindow::~MainWindow()
@@ -46,22 +48,28 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::timedOut()
-{
-    switch(state)
-    {
-    case 0:
-        roll += 1;
-        break;
-    case 1:
-        roll -= 2;
-        break;
-    default:
-        timer.stop();
-        break;
-    }
-    if(roll > 33) state++;
-    if(roll < -8) state++;
+//void MainWindow::timedOut()
+//{
+//    switch(state)
+//    {
+//    case 0:
+//        roll += 1;
+//        break;
+//    case 1:
+//        roll -= 2;
+//        break;
+//    default:
+//        timer.stop();
+//        break;
+//    }
+//    if(roll > 33) state++;
+//    if(roll < -8) state++;
 
-    h->setRoll(roll);
+//    h->setRoll(roll);
+//}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    this->h->setRoll(event->pos().x());
+    QMainWindow::mouseMoveEvent(event);
 }
