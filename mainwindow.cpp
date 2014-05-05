@@ -71,5 +71,6 @@ MainWindow::~MainWindow()
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     this->h->setRoll(event->pos().x());
+    this->h->setPitch(event->pos().y());
     QMainWindow::mouseMoveEvent(event);
 }

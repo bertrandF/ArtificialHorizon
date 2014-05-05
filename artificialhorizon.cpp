@@ -24,7 +24,8 @@
 
 ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     QGraphicsView(parent),
-    roll(0)
+    roll(0),
+    pitch(0)
 {
     double scale;
 
@@ -52,9 +53,16 @@ void ArtificialHorizon::setRoll(double roll)
     this->scene()->invalidate();
 }
 
+void ArtificialHorizon::setPitch(double pitch)
+{
+    this->pitch = pitch;
+    this->scene()->invalidate();
+}
+
 void ArtificialHorizon::drawBackground(QPainter *painter, const QRectF &rect)
 {
     painter->rotate(this->roll);
+    painter->translate(QPointF(0, this->pitch));
     painter->drawPixmap(QPoint(-100,-100), this->back.pixmap(),
                         QRect(QPoint(133,133), QPoint(333,333)));
 }

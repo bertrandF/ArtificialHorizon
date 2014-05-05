@@ -35,7 +35,8 @@ public:
 signals:
 
 public slots:
-    void    setRoll(double roll);
+    void    setRoll (double roll);
+    void    setPitch(double pitch);
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect);
@@ -46,6 +47,7 @@ private:
     QGraphicsPixmapItem foreground;
 
     double roll;
+    double pitch;
 };
 
 #endif // ARTIFICIALHORIZON_H
