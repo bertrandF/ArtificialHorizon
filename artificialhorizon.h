@@ -22,8 +22,10 @@
 #define ARTIFICIALHORIZON_H
 
 #include <QGraphicsView>
-#include <QSize>
-#include <QGraphicsPixmapItem>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QBrush>
+#include <QPen>
 
 class ArtificialHorizon : public QGraphicsView
 {
@@ -38,13 +40,16 @@ public slots:
     void    setPitch(double pitch);
 
 protected:
-    void drawBackground(QPainter *painter, const QRectF &rect);
-    void drawForeground(QPainter *painter, const QRectF &rect);
+    void paintEvent(QPaintEvent *event);
 
 private:
-    QSize backSize;
-    QGraphicsPixmapItem back;
-    QGraphicsPixmapItem foreground;
+    void paint(QPainter *painter, QPaintEvent *event);
+
+    QBrush  background;
+    QPen    circlePen;
+    QBrush  skyBrush;
+    QBrush  groundBrush;
+    QPen    linePen;
 
     double roll;
     double pitch;

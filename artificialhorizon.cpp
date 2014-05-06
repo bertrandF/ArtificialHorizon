@@ -20,60 +20,89 @@
 
 #include "artificialhorizon.h"
 
+// This is the size, (no scale sry !)
 #define WIDGETSIZE  (200)
+
+#define CIRCLEPENWIDTH  (4)
 
 ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     QGraphicsView(parent),
-    roll(0),
+    roll(10),
     pitch(0)
 {
-    double scale;
-
-    // Set Geometry, init configuration
     this->setGeometry(0, 0, WIDGETSIZE, WIDGETSIZE);
-    this->setScene(new QGraphicsScene(this));
-    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    // Open images, get scale factor
-    QPixmap foreground = QPixmap(":/images/foreground.png");
-    scale = foreground.size().width() / WIDGETSIZE;
-    QPixmap background = QPixmap(":/images/background.png");
-    this->backSize = background.size();
-
-    // Setup Graphics view items
-    this->back.setPixmap(background);
-    this->back.setTransformOriginPoint(background.width()/2, background.height()/2);
-    this->foreground.setPixmap(foreground.scaled(QSize(WIDGETSIZE,WIDGETSIZE)));
+    background      = QBrush(QColor(0x53, 0x54, 0x48));
+    circlePen       = QPen(Qt::black);
+    circlePen.setWidth(CIRCLEPENWIDTH);
+    skyBrush        = QBrush(QColor(0x1d, 0x8e, 0xc6));
+    groundBrush     = QBrush(QColor(0xb7, 0x71, 0x1c));
+    linePen         = QPen(Qt::white);
+    linePen.setWidth(CIRCLEPENWIDTH);
 }
 
 void ArtificialHorizon::setRoll(double roll)
 {
-    this->roll = roll;
-    this->scene()->invalidate();
+    if(roll >= -360 && roll >= 360)
+    {
+        this->roll = roll;
+        this->scene()->invalidate();
+    }
 }
 
 void ArtificialHorizon::setPitch(double pitch)
 {
-    if(pitch < this->backSize.height()/2-WIDGETSIZE)
+    if(pitch >= -90 && pitch <= 90)
     {
         this->pitch = pitch;
         this->scene()->invalidate();
     }
 }
 
-void ArtificialHorizon::drawBackground(QPainter *painter, const QRectF &rect)
+void ArtificialHorizon::paintEvent(QPaintEvent *event)
 {
-    painter->rotate(this->roll);
-    painter->translate(QPointF(0, this->pitch));
-    painter->drawPixmap(
-                QPoint(-this->backSize.width()/2, -this->backSize.height()/2),
-                this->back.pixmap());
+    QPainter painter;
+    painter.begin(this->viewport());
+    painter.setRenderHint(QPainter::Antialiasing);
+    paint(&painter, event);
+    painter.end();
 }
 
-void ArtificialHorizon::drawForeground(QPainter *painter, const QRectF &rect)
+void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
 {
-    painter->drawPixmap(-100,-100, this->foreground.pixmap());
-    QGraphicsView::drawForeground(painter, rect);
+    // Background
+    painter->fillRect(event->rect(), background);
+    painter->setPen(circlePen);
+    painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
+
+    // Sky
+    painter->setBrush(skyBrush);
+    QRectF rect (-(WIDGETSIZE/2-CIRCLEPENWIDTH), -(WIDGETSIZE/2-CIRCLEPENWIDTH),
+                (WIDGETSIZE/2-CIRCLEPENWIDTH)*2, (WIDGETSIZE/2-CIRCLEPENWIDTH)*2);
+    painter->drawChord(rect,180*16,-180*16);
+    // Ground
+    painter->setBrush(groundBrush);
+    painter->drawChord(rect,180*16,180*16);
+    // Horizon line
+    painter->setPen(linePen);
+    painter->drawLine(-(WIDGETSIZE/2-CIRCLEPENWIDTH*2), 0,
+                      (WIDGETSIZE/2-CIRCLEPENWIDTH*2), 0);
+
+    painter->save();
+    // Roll
+    painter->rotate(roll);
+    // Sky
+    painter->setPen(circlePen);
+    QRectF rectIn (-(WIDGETSIZE/2-CIRCLEPENWIDTH)+20, -(WIDGETSIZE/2-CIRCLEPENWIDTH)+20,
+                   (WIDGETSIZE/2-CIRCLEPENWIDTH-20)*2, (WIDGETSIZE/2-CIRCLEPENWIDTH-20)*2);
+    painter->setBrush(skyBrush);
+    painter->drawChord(rectIn,180*16,-180*16);
+    // Ground
+    painter->setBrush(groundBrush);
+    painter->drawChord(rectIn,180*16,180*16);
+    // Horizon line
+    painter->setPen(linePen);
+    painter->drawLine(-(WIDGETSIZE/2-(CIRCLEPENWIDTH+10)*2), 0,
+                      (WIDGETSIZE/2-(CIRCLEPENWIDTH+10)*2), 0);
+    painter->restore();
 }
