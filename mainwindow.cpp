@@ -74,27 +74,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    int pitch = event->pos().y();
-    int roll  = event->pos().x();
-
-    if(std::abs(pitch) >= 180) return;
-    if(std::abs(roll)  >= 180) return;
-
-    if(pitch > 0)
-    {
-        if(pitch > 90)
-            roll = 180-roll;
-        pitch = -2 * (int)(pitch/90) * (pitch-90) + pitch;
-    }
-    else
-    {
-        if(pitch < -90)
-            roll = 180-roll;
-        pitch = -2 * (int)(std::abs(pitch)/90) * (pitch+90) + pitch;
-    }
-
-
-    this->h->setRoll(roll);
-    this->h->setPitch(pitch);
+    this->h->setRoll(event->pos().x());
+    this->h->setPitch(event->pos().y());
     QMainWindow::mouseMoveEvent(event);
 }
