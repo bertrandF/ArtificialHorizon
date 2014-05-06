@@ -46,7 +46,7 @@ void ArtificialHorizon::setRoll(double roll)
     if(roll >= -360 && roll >= 360)
     {
         this->roll = roll;
-        this->scene()->invalidate();
+        this->viewport()->update();
     }
 }
 
@@ -55,7 +55,7 @@ void ArtificialHorizon::setPitch(double pitch)
     if(pitch >= -90 && pitch <= 90)
     {
         this->pitch = pitch;
-        this->scene()->invalidate();
+        this->viewport()->update();
     }
 }
 
