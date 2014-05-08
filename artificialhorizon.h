@@ -50,6 +50,7 @@ private:
     QBrush  skyBrush;
     QBrush  groundBrush;
     QPen    linePen;
+    QBrush  triangleBrush;
 
     QPixmap foregroundPixmap;
     QRect   innerCircleRect;

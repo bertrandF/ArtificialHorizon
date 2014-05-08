@@ -42,6 +42,7 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     groundBrush     = QBrush(QColor(0xb7, 0x71, 0x1c));
     linePen         = QPen(Qt::white);
     linePen.setWidth(CIRCLEPENWIDTH);
+    triangleBrush   = QBrush(Qt::white);
 
     // FOREGROUND PIXMAP
     foregroundPixmap = QPixmap(WIDGETSIZE,WIDGETSIZE);
@@ -66,6 +67,15 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     painter.setPen(linePen);
     painter.drawLine(-(WIDGETSIZE/2-CIRCLEPENWIDTH*2), 0,
                      (WIDGETSIZE/2-CIRCLEPENWIDTH*2), 0 );
+    // Triangle
+    QPointF triangle[3] = {
+        QPointF(-10, -90),
+        QPointF(10, -90),
+        QPointF(0, -78)
+    };
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(triangleBrush);
+    painter.drawPolygon(triangle, 3);
 
     // For horizon moving parts
     innerCircleRect = QRect(-INNERCIRCLERADIUS, -INNERCIRCLERADIUS,
