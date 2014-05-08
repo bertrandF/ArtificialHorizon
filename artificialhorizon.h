@@ -54,6 +54,10 @@ private:
 
     QPixmap foregroundPixmap;
     QRect   innerCircleRect;
+    QPen    indicatorPen;
+    QBrush  indicatorBrush;
+    QPointF indicatorTriangle[3];
+    QLineF  indicatorLines[5];
 
     double roll;
     double pitch;

@@ -43,12 +43,17 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     linePen         = QPen(Qt::white);
     linePen.setWidth(CIRCLEPENWIDTH);
     triangleBrush   = QBrush(Qt::white);
+    indicatorBrush  = QBrush(Qt::black);
+    indicatorPen    = QPen(Qt::black);
+    indicatorPen.setWidth(3);
 
     // FOREGROUND PIXMAP
     foregroundPixmap = QPixmap(WIDGETSIZE,WIDGETSIZE);
-    QPainter painter(&(this->foregroundPixmap));
+    QPainter painter;
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.begin(&(this->foregroundPixmap));
     // Background
-    painter.fillRect(this->rect(), backgroundBrush);
+    painter.fillRect(foregroundPixmap.rect(), backgroundBrush);
     painter.translate(WIDGETSIZE/2, WIDGETSIZE/2);
     painter.setPen(circlePen);
     QRectF outterCircleRect = QRect(
@@ -76,10 +81,21 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     painter.setPen(Qt::NoPen);
     painter.setBrush(triangleBrush);
     painter.drawPolygon(triangle, 3);
+    painter.end();
 
     // For horizon moving parts
     innerCircleRect = QRect(-INNERCIRCLERADIUS, -INNERCIRCLERADIUS,
                             INNERCIRCLERADIUS*2, INNERCIRCLERADIUS*2 );
+
+    // Inidcator points
+    indicatorTriangle[0]    = QPointF(-20, INNERCIRCLERADIUS);
+    indicatorTriangle[1]    = QPointF(20, INNERCIRCLERADIUS);
+    indicatorTriangle[2]    = QPointF(0, INNERCIRCLERADIUS-35);
+    indicatorLines[0]       = QLineF(0, INNERCIRCLERADIUS-30, 0, 0);
+    indicatorLines[1]       = QLineF(-50, 0, -25, 0);
+    indicatorLines[2]       = QLineF(50, 0, 25, 0);
+    indicatorLines[3]       = QLineF(-25, 0, 0, 25);
+    indicatorLines[4]       = QLineF(25, 0, 0, 25);
 }
 
 void ArtificialHorizon::setRoll(double roll)
@@ -118,6 +134,7 @@ void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
                 QRect(0,0,WIDGETSIZE,WIDGETSIZE)
                 );
 
+    painter->save();
     // Moving horizon
     painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
     painter->rotate(roll);
@@ -136,6 +153,16 @@ void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
     painter->setPen(circlePen);
     painter->setBrush(Qt::NoBrush);
     painter->drawEllipse(QPoint(0,0), INNERCIRCLERADIUS, INNERCIRCLERADIUS);
+    painter->restore();
 
-
+    // INDICATOR
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(indicatorBrush);
+    painter->drawChord(this->viewport()->rect(), 230*16, 80*16);
+    painter->save();
+    painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
+    painter->drawPolygon(indicatorTriangle, 3);
+    painter->setPen(indicatorPen);
+    painter->drawLines(indicatorLines, 5);
+    painter->restore();
 }
