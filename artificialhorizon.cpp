@@ -48,12 +48,12 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     indicatorPen.setWidth(3);
 
     // FOREGROUND PIXMAP
-    foregroundPixmap = QPixmap(WIDGETSIZE,WIDGETSIZE);
+    backgroundPixmap = QPixmap(WIDGETSIZE,WIDGETSIZE);
     QPainter painter;
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.begin(&(this->foregroundPixmap));
+    painter.begin(&(this->backgroundPixmap));
     // Background
-    painter.fillRect(foregroundPixmap.rect(), backgroundBrush);
+    painter.fillRect(backgroundPixmap.rect(), backgroundBrush);
     painter.translate(WIDGETSIZE/2, WIDGETSIZE/2);
     painter.setPen(circlePen);
     QRectF outterCircleRect = QRect(
@@ -130,7 +130,7 @@ void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
     // Background Image
     painter->drawPixmap(
                 QPoint(0,0),
-                foregroundPixmap,
+                backgroundPixmap,
                 QRect(0,0,WIDGETSIZE,WIDGETSIZE)
                 );
 

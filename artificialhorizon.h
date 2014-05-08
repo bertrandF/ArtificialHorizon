@@ -52,7 +52,7 @@ private:
     QPen    linePen;
     QBrush  triangleBrush;
 
-    QPixmap foregroundPixmap;
+    QPixmap backgroundPixmap;
     QRect   innerCircleRect;
     QPen    indicatorPen;
     QBrush  indicatorBrush;
