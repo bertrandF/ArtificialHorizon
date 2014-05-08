@@ -107,13 +107,18 @@ void ArtificialHorizon::setRoll(double roll)
     }
 }
 
-void ArtificialHorizon::setPitch(double pitch)
+void ArtificialHorizon::setRollPitch(double roll, double pitch)
 {
-    if(pitch >= -90 && pitch <= 90)
+    if(roll >= 0 && roll >= 360)
     {
-        this->pitch = pitch;
-        this->viewport()->update();
+        if(pitch >= -90 && pitch <= 90)
+        {
+            this->pitch = pitch;
+            this->roll = roll;
+        }
     }
+
+    this->viewport()->update();
 }
 
 void ArtificialHorizon::paintEvent(QPaintEvent *event)
@@ -127,15 +132,15 @@ void ArtificialHorizon::paintEvent(QPaintEvent *event)
 
 void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
 {
-    // Background Image
+    // BACKGROUND IMAGE
     painter->drawPixmap(
                 QPoint(0,0),
                 backgroundPixmap,
                 QRect(0,0,WIDGETSIZE,WIDGETSIZE)
                 );
 
+    // MOVING HORIZON
     painter->save();
-    // Moving horizon
     painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
     painter->rotate(roll);
     double angleDeg = (M_PI_2 - std::acos(pitch/INNERCIRCLERADIUS))*180/M_PI;

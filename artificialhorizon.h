@@ -36,8 +36,7 @@ public:
 signals:
 
 public slots:
-    void    setRoll (double roll);
-    void    setPitch(double pitch);
+    void    setRollPitch(double roll, double pitch);
 
 protected:
     void paintEvent(QPaintEvent *event);
