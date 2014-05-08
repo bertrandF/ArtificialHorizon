@@ -50,12 +50,12 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     scalePen.setWidth(2);
 
     // FOREGROUND PIXMAP
-    backgroundPixmap = QPixmap(WIDGETSIZE,WIDGETSIZE);
+    foregroundPixmap = QPixmap(WIDGETSIZE,WIDGETSIZE);
     QPainter painter;
+    painter.begin(&(this->foregroundPixmap));
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.begin(&(this->backgroundPixmap));
     // Background
-    painter.fillRect(backgroundPixmap.rect(), backgroundBrush);
+    painter.fillRect(foregroundPixmap.rect(), backgroundBrush);
     painter.translate(WIDGETSIZE/2, WIDGETSIZE/2);
     painter.setPen(circlePen);
     QRectF outterCircleRect = QRect(
@@ -84,6 +84,19 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     painter.setBrush(triangleBrush);
     painter.drawPolygon(triangle, 3);
     painter.end();
+
+    QPixmap mask = QPixmap(WIDGETSIZE,WIDGETSIZE);
+    QPainter maskPainter(&mask);
+    maskPainter.setPen(Qt::NoPen);
+    maskPainter.setBrush(QBrush(Qt::red));
+    maskPainter.drawEllipse(
+                QPoint(WIDGETSIZE/2,WIDGETSIZE/2),
+                INNERCIRCLERADIUS,
+                INNERCIRCLERADIUS
+                );
+    foregroundMask = mask.createMaskFromColor(Qt::red, Qt::MaskInColor);
+    foregroundPixmap.setMask(foregroundMask);
+
 
     // For horizon moving parts
     innerCircleRect = QRect(-INNERCIRCLERADIUS, -INNERCIRCLERADIUS,
@@ -140,13 +153,6 @@ void ArtificialHorizon::paintEvent(QPaintEvent *event)
 
 void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
 {
-    // BACKGROUND IMAGE
-    painter->drawPixmap(
-                QPoint(0,0),
-                backgroundPixmap,
-                QRect(0,0,WIDGETSIZE,WIDGETSIZE)
-                );
-
     // MOVING HORIZON
     painter->save();
     painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
@@ -172,9 +178,18 @@ void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
     painter->save();
     painter->translate(WIDGETSIZE/2, WIDGETSIZE/2+pitch);
     //painter->rotate(roll);
+    QRegion region(innerCircleRect, QRegion::Ellipse);
+    painter->setClipRegion(region);
     painter->setPen(scalePen);
     painter->drawLines(scaleLines, 12);
     painter->restore();
+
+    // FOREGROUND IMAGE
+    painter->drawPixmap(
+                QPoint(0,0),
+                foregroundPixmap,
+                QRect(0,0,WIDGETSIZE,WIDGETSIZE)
+                );
 
     // INDICATOR
     painter->setPen(Qt::NoPen);
@@ -185,6 +200,14 @@ void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
     painter->drawPolygon(indicatorTriangle, 3);
     painter->setPen(indicatorPen);
     painter->drawLines(indicatorLines, 5);
+    painter->restore();
+
+    // INNER CIRCLE
+    painter->save();
+    painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
+    painter->setPen(circlePen);
+    painter->setBrush(Qt::NoBrush);
+    painter->drawEllipse(QPoint(0,0), INNERCIRCLERADIUS, INNERCIRCLERADIUS);
     painter->restore();
 
 }

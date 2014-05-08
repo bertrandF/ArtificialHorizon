@@ -26,6 +26,7 @@
 #include <QPaintEvent>
 #include <QBrush>
 #include <QPen>
+#include <QBitmap>
 
 class ArtificialHorizon : public QGraphicsView
 {
@@ -51,7 +52,8 @@ private:
     QPen    linePen;
     QBrush  triangleBrush;
 
-    QPixmap backgroundPixmap;
+    QPixmap foregroundPixmap;
+    QBitmap foregroundMask;
     QRect   innerCircleRect;
     QPen    indicatorPen;
     QBrush  indicatorBrush;
