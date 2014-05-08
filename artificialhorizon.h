@@ -45,11 +45,14 @@ protected:
 private:
     void paint(QPainter *painter, QPaintEvent *event);
 
-    QBrush  background;
+    QBrush  backgroundBrush;
     QPen    circlePen;
     QBrush  skyBrush;
     QBrush  groundBrush;
     QPen    linePen;
+
+    QPixmap foregroundPixmap;
+    QRect   innerCircleRect;
 
     double roll;
     double pitch;

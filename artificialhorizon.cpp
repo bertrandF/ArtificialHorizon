@@ -19,26 +19,57 @@
  * */
 
 #include "artificialhorizon.h"
+#include <cmath>
 
 // This is the size, (no scale sry !)
 #define WIDGETSIZE  (200)
 
-#define CIRCLEPENWIDTH  (4)
+#define CIRCLEPENWIDTH      (4)
+#define INNERCIRCLERADIUS   (WIDGETSIZE/2-CIRCLEPENWIDTH-20)
 
 ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     QGraphicsView(parent),
-    roll(10),
+    roll(0),
     pitch(0)
 {
     this->setGeometry(0, 0, WIDGETSIZE, WIDGETSIZE);
 
-    background      = QBrush(QColor(0x53, 0x54, 0x48));
+    // Style settings
+    backgroundBrush      = QBrush(QColor(0x53, 0x54, 0x48));
     circlePen       = QPen(Qt::black);
     circlePen.setWidth(CIRCLEPENWIDTH);
     skyBrush        = QBrush(QColor(0x1d, 0x8e, 0xc6));
     groundBrush     = QBrush(QColor(0xb7, 0x71, 0x1c));
     linePen         = QPen(Qt::white);
     linePen.setWidth(CIRCLEPENWIDTH);
+
+    // FOREGROUND PIXMAP
+    foregroundPixmap = QPixmap(WIDGETSIZE,WIDGETSIZE);
+    QPainter painter(&(this->foregroundPixmap));
+    // Background
+    painter.fillRect(this->rect(), backgroundBrush);
+    painter.translate(WIDGETSIZE/2, WIDGETSIZE/2);
+    painter.setPen(circlePen);
+    QRectF outterCircleRect = QRect(
+                -(WIDGETSIZE/2-CIRCLEPENWIDTH),
+                -(WIDGETSIZE/2-CIRCLEPENWIDTH),
+                (WIDGETSIZE/2-CIRCLEPENWIDTH)*2,
+                (WIDGETSIZE/2-CIRCLEPENWIDTH)*2
+                );
+    // Sky
+    painter.setBrush(skyBrush);
+    painter.drawChord(outterCircleRect,180*16,-180*16);
+    // Ground
+    painter.setBrush(groundBrush);
+    painter.drawChord(outterCircleRect,180*16,180*16);
+    // Horizon line
+    painter.setPen(linePen);
+    painter.drawLine(-(WIDGETSIZE/2-CIRCLEPENWIDTH*2), 0,
+                     (WIDGETSIZE/2-CIRCLEPENWIDTH*2), 0 );
+
+    // For horizon moving parts
+    innerCircleRect = QRect(-INNERCIRCLERADIUS, -INNERCIRCLERADIUS,
+                            INNERCIRCLERADIUS*2, INNERCIRCLERADIUS*2 );
 }
 
 void ArtificialHorizon::setRoll(double roll)
@@ -70,39 +101,31 @@ void ArtificialHorizon::paintEvent(QPaintEvent *event)
 
 void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
 {
-    // Background
-    painter->fillRect(event->rect(), background);
-    painter->setPen(circlePen);
+    // Background Image
+    painter->drawPixmap(
+                QPoint(0,0),
+                foregroundPixmap,
+                QRect(0,0,WIDGETSIZE,WIDGETSIZE)
+                );
+
+    // Moving horizon
     painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
-
-    // Sky
-    painter->setBrush(skyBrush);
-    QRectF rect (-(WIDGETSIZE/2-CIRCLEPENWIDTH), -(WIDGETSIZE/2-CIRCLEPENWIDTH),
-                (WIDGETSIZE/2-CIRCLEPENWIDTH)*2, (WIDGETSIZE/2-CIRCLEPENWIDTH)*2);
-    painter->drawChord(rect,180*16,-180*16);
-    // Ground
-    painter->setBrush(groundBrush);
-    painter->drawChord(rect,180*16,180*16);
-    // Horizon line
-    painter->setPen(linePen);
-    painter->drawLine(-(WIDGETSIZE/2-CIRCLEPENWIDTH*2), 0,
-                      (WIDGETSIZE/2-CIRCLEPENWIDTH*2), 0);
-
-    painter->save();
-    // Roll
     painter->rotate(roll);
+    double angleDeg = (M_PI_2 - std::acos(pitch/INNERCIRCLERADIUS))*180/M_PI;
+    int angle = (int)(angleDeg*16);
+    painter->setPen(linePen);
     // Sky
-    painter->setPen(circlePen);
-    QRectF rectIn (-(WIDGETSIZE/2-CIRCLEPENWIDTH)+20, -(WIDGETSIZE/2-CIRCLEPENWIDTH)+20,
-                   (WIDGETSIZE/2-CIRCLEPENWIDTH-20)*2, (WIDGETSIZE/2-CIRCLEPENWIDTH-20)*2);
     painter->setBrush(skyBrush);
-    painter->drawChord(rectIn,180*16,-180*16);
+    painter->drawChord(innerCircleRect, 180*16+angle, -180*16-angle*2);
     // Ground
     painter->setBrush(groundBrush);
-    painter->drawChord(rectIn,180*16,180*16);
-    // Horizon line
-    painter->setPen(linePen);
-    painter->drawLine(-(WIDGETSIZE/2-(CIRCLEPENWIDTH+10)*2), 0,
-                      (WIDGETSIZE/2-(CIRCLEPENWIDTH+10)*2), 0);
-    painter->restore();
+    painter->drawChord(innerCircleRect, 180*16+angle, 180*16-angle*2);
+    // Outter Circle
+    // Drawing the circle afterwards allow to have a nice join between horizon
+    // and the circle.
+    painter->setPen(circlePen);
+    painter->setBrush(Qt::NoBrush);
+    painter->drawEllipse(QPoint(0,0), INNERCIRCLERADIUS, INNERCIRCLERADIUS);
+
+
 }
