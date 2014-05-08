@@ -46,6 +46,8 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     indicatorBrush  = QBrush(Qt::black);
     indicatorPen    = QPen(Qt::black);
     indicatorPen.setWidth(3);
+    scalePen        = QPen(Qt::white);
+    scalePen.setWidth(2);
 
     // FOREGROUND PIXMAP
     backgroundPixmap = QPixmap(WIDGETSIZE,WIDGETSIZE);
@@ -96,15 +98,21 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     indicatorLines[2]       = QLineF(50, 0, 25, 0);
     indicatorLines[3]       = QLineF(-25, 0, 0, 25);
     indicatorLines[4]       = QLineF(25, 0, 0, 25);
-}
 
-void ArtificialHorizon::setRoll(double roll)
-{
-    if(roll >= -360 && roll >= 360)
-    {
-        this->roll = roll;
-        this->viewport()->update();
-    }
+    // Graduated scale
+    scaleLines[0]   = QLineF(-5, -5, 5, -5);
+    scaleLines[1]   = QLineF(-10, -10, 10, -10);
+    scaleLines[2]   = QLineF(-5, -15, 5, -15);
+    scaleLines[3]   = QLineF(-15, -20, 15, -20);
+    scaleLines[4]   = QLineF(-5, -25, 5, -25);
+    scaleLines[5]   = QLineF(-20, -30, 20, -30);
+
+    scaleLines[6]   = QLineF(-5, 5, 5, 5);
+    scaleLines[7]   = QLineF(-10, 10, 10, 10);
+    scaleLines[8]   = QLineF(-5, 15, 5, 15);
+    scaleLines[9]   = QLineF(-15, 20, 15, 20);
+    scaleLines[10]  = QLineF(-5, 25, 5, 25);
+    scaleLines[11]  = QLineF(-20, 30, 20, 30);
 }
 
 void ArtificialHorizon::setRollPitch(double roll, double pitch)
@@ -160,6 +168,14 @@ void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
     painter->drawEllipse(QPoint(0,0), INNERCIRCLERADIUS, INNERCIRCLERADIUS);
     painter->restore();
 
+    // SCALE
+    painter->save();
+    painter->translate(WIDGETSIZE/2, WIDGETSIZE/2+pitch);
+    //painter->rotate(roll);
+    painter->setPen(scalePen);
+    painter->drawLines(scaleLines, 12);
+    painter->restore();
+
     // INDICATOR
     painter->setPen(Qt::NoPen);
     painter->setBrush(indicatorBrush);
@@ -170,4 +186,5 @@ void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
     painter->setPen(indicatorPen);
     painter->drawLines(indicatorLines, 5);
     painter->restore();
+
 }

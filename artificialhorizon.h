@@ -57,6 +57,8 @@ private:
     QBrush  indicatorBrush;
     QPointF indicatorTriangle[3];
     QLineF  indicatorLines[5];
+    QPen    scalePen;
+    QLineF  scaleLines[12];
 
     double roll;
     double pitch;
