@@ -22,6 +22,7 @@
 
 #include <QThread>
 #include <QMouseEvent>
+#include <QDebug>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -32,19 +33,17 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    //state(0),
-    roll(11),
-    mousePos(QPoint(0,0)),
-    prevPitch(0),
-    prevRoll(0)
+    state(0),
+    roll(0),
+    pitch(0)
 {
     ui->setupUi(this);
     this->h = new ArtificialHorizon(this->ui->centralWidget);
     h->show();
 
-    //connect(&(this->timer), SIGNAL(timeout()), this, SLOT(timedOut()));
-    //timer.setInterval(TIMEOUT);
-    //timer.start();
+    connect(&(this->timer), SIGNAL(timeout()), this, SLOT(timedOut()));
+    timer.setInterval(TIMEOUT);
+    timer.start();
 }
 
 MainWindow::~MainWindow()
@@ -52,28 +51,54 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//void MainWindow::timedOut()
-//{
-//    switch(state)
-//    {
-//    case 0:
-//        roll += 1;
-//        break;
-//    case 1:
-//        roll -= 2;
-//        break;
-//    default:
-//        timer.stop();
-//        break;
-//    }
-//    if(roll > 33) state++;
-//    if(roll < -8) state++;
+void MainWindow::timedOut()
+{
+    switch(state)
+    {
+    case 0:
+        pitch += 5;
+        break;
+    case 1:
+        pitch -= 5;
+        break;
+    default:
+        timer.stop();
+        break;
+    }
 
-//    h->setRoll(roll);
-//}
+    if(state==0 && pitch>90)
+    {
+        state++;
+        roll -= 180-roll;
+        pitch = 180 - pitch;
+    }
+    else if(state==1 && pitch < 10)
+    {
+        state++;
+    }
+
+    qDebug() << roll << "," << pitch;
+    h->setRollPitch(roll,pitch);
+}
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    this->h->setRollPitch(event->pos().x(), event->pos().y());
+//    int pitch = event->pos().y();
+//    int roll = event->pos().x();
+
+//    if(pitch>90)
+//    {
+//        roll = 180-roll;
+//        pitch = -180+pitch;
+//    }
+//    else if(pitch<-90)
+//    {
+//        roll = 180-roll;
+//        pitch = 180+pitch;
+//    }
+
+//    qDebug() << event->pos().x() << "," << event->pos().y() <<  " : " << roll << "," << pitch;
+
+//    this->h->setRollPitch(roll, pitch);
     QMainWindow::mouseMoveEvent(event);
 }
