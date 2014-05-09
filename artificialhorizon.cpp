@@ -113,19 +113,19 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     indicatorLines[4]       = QLineF(25, 0, 0, 25);
 
     // Graduated scale
-    scaleLines[0]   = QLineF(-5, -5, 5, -5);
-    scaleLines[1]   = QLineF(-10, -10, 10, -10);
-    scaleLines[2]   = QLineF(-5, -15, 5, -15);
-    scaleLines[3]   = QLineF(-15, -20, 15, -20);
-    scaleLines[4]   = QLineF(-5, -25, 5, -25);
-    scaleLines[5]   = QLineF(-20, -30, 20, -30);
+    scaleLines[0]   = QLineF(-10, -5, 10, -5);
+    scaleLines[1]   = QLineF(-35, -10, 35, -10);
+    scaleLines[2]   = QLineF(-10, -15, 10, -15);
+    scaleLines[3]   = QLineF(-45, -20, 45, -20);
+    scaleLines[4]   = QLineF(-10, -25, 10, -25);
+    scaleLines[5]   = QLineF(-55, -30, 55, -30);
 
-    scaleLines[6]   = QLineF(-5, 5, 5, 5);
-    scaleLines[7]   = QLineF(-10, 10, 10, 10);
-    scaleLines[8]   = QLineF(-5, 15, 5, 15);
-    scaleLines[9]   = QLineF(-15, 20, 15, 20);
-    scaleLines[10]  = QLineF(-5, 25, 5, 25);
-    scaleLines[11]  = QLineF(-20, 30, 20, 30);
+    scaleLines[6]   = QLineF(-10, 5, 10, 5);
+    scaleLines[7]   = QLineF(-35, 10, 35, 10);
+    scaleLines[8]   = QLineF(-10, 15, 10, 15);
+    scaleLines[9]   = QLineF(-45, 20, 45, 20);
+    scaleLines[10]  = QLineF(-10, 25, 10, 25);
+    scaleLines[11]  = QLineF(-55, 30, 55, 30);
 }
 
 void ArtificialHorizon::setRollPitch(double roll, double pitch)
