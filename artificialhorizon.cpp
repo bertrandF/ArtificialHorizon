@@ -84,7 +84,7 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     painter.setBrush(triangleBrush);
     painter.drawPolygon(triangle, 3);
     painter.end();
-
+    // Mask - transparency for inner circle
     QPixmap mask = QPixmap(WIDGETSIZE,WIDGETSIZE);
     QPainter maskPainter(&mask);
     maskPainter.setPen(Qt::NoPen);
@@ -96,6 +96,16 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
                 );
     foregroundMask = mask.createMaskFromColor(Qt::red, Qt::MaskInColor);
     foregroundPixmap.setMask(foregroundMask);
+
+    // MOVING PIXMAP
+    movingPixmap = QPixmap(400,400);
+    painter.begin(&(this->movingPixmap));
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.fillRect(QRect(0,0,400,200), skyBrush);
+    painter.fillRect(QRect(0,200,400,200), groundBrush);
+    painter.setPen(linePen);
+    painter.drawLine(QPointF(0,200), QPointF(400,200));
+    painter.end();
 
 
     // For horizon moving parts
@@ -155,41 +165,15 @@ void ArtificialHorizon::paintEvent(QPaintEvent *event)
 
 void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
 {
-    double angleDeg;
-    int angle;
-
     // MOVING HORIZON
     painter->save();
     painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
     painter->rotate(roll);
-    // Avoid weird behaviour when ground/sky must be way out of the inner circle
-    if(pitch > INNERCIRCLERADIUS)
-    {
-        angleDeg = 90;
-    }
-    else if(pitch < -INNERCIRCLERADIUS)
-    {
-        angleDeg = -90;
-    }
-    else
-    {
-        angleDeg = (M_PI_2 - std::acos(pitch/INNERCIRCLERADIUS))*180/M_PI;
-    }
-
-    angle = (int)(angleDeg*16);
-    painter->setPen(linePen);
-    // Sky
-    painter->setBrush(skyBrush);
-    painter->drawChord(innerCircleRect, 180*16+angle, -180*16-angle*2);
-    // Ground
-    painter->setBrush(groundBrush);
-    painter->drawChord(innerCircleRect, 180*16+angle, 180*16-angle*2);
-    // Outter Circle
-    // Drawing the circle afterwards allow to have a nice join between horizon
-    // and the circle.
-    painter->setPen(circlePen);
-    painter->setBrush(Qt::NoBrush);
-    painter->drawEllipse(QPoint(0,0), INNERCIRCLERADIUS, INNERCIRCLERADIUS);
+    painter->drawPixmap(
+                QPoint(-100,-100),
+                movingPixmap,
+                QRect(100,100-pitch, 200,200)
+                );
     painter->restore();
 
     // SCALE
