@@ -139,6 +139,8 @@ void ArtificialHorizon::setRollPitch(double roll, double pitch)
         }
     }
 
+    this->pitch = pitch;
+    this->roll = roll;
     this->viewport()->update();
 }
 
@@ -153,12 +155,28 @@ void ArtificialHorizon::paintEvent(QPaintEvent *event)
 
 void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
 {
+    double angleDeg;
+    int angle;
+
     // MOVING HORIZON
     painter->save();
     painter->translate(WIDGETSIZE/2, WIDGETSIZE/2);
     painter->rotate(roll);
-    double angleDeg = (M_PI_2 - std::acos(pitch/INNERCIRCLERADIUS))*180/M_PI;
-    int angle = (int)(angleDeg*16);
+    // Avoid weird behaviour when ground/sky must be way out of the inner circle
+    if(pitch > INNERCIRCLERADIUS)
+    {
+        angleDeg = 90;
+    }
+    else if(pitch < -INNERCIRCLERADIUS)
+    {
+        angleDeg = -90;
+    }
+    else
+    {
+        angleDeg = (M_PI_2 - std::acos(pitch/INNERCIRCLERADIUS))*180/M_PI;
+    }
+
+    angle = (int)(angleDeg*16);
     painter->setPen(linePen);
     // Sky
     painter->setBrush(skyBrush);
