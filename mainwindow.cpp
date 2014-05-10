@@ -61,6 +61,9 @@ void MainWindow::timedOut()
     case 1:
         pitch -= 5;
         break;
+    case 2:
+        pitch += 10;
+        break;
     default:
         timer.stop();
         break;
@@ -69,10 +72,16 @@ void MainWindow::timedOut()
     if(state==0 && pitch>90)
     {
         state++;
-        roll -= 180-roll;
+        roll = 180-roll;
         pitch = 180 - pitch;
     }
-    else if(state==1 && pitch < 10)
+    else if(state==1 && pitch < -90)
+    {
+        roll = 180-roll;
+        pitch = -180-pitch;
+        state++;
+    }
+    else if(state==2 && pitch > 10)
     {
         state++;
     }
