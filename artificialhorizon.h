@@ -55,7 +55,6 @@ private:
     QPixmap foregroundPixmap;
     QBitmap foregroundMask;
     QPixmap movingPixmap;
-    QRect   innerCircleRect;
     QPen    indicatorPen;
     QBrush  indicatorBrush;
     QPointF indicatorTriangle[3];

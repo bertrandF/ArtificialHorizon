@@ -97,22 +97,7 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     foregroundMask = mask.createMaskFromColor(Qt::red, Qt::MaskInColor);
     foregroundPixmap.setMask(foregroundMask);
 
-    // MOVING PIXMAP
-    movingPixmap = QPixmap(400,400);
-    painter.begin(&(this->movingPixmap));
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(QRect(0,0,400,200), skyBrush);
-    painter.fillRect(QRect(0,200,400,200), groundBrush);
-    painter.setPen(linePen);
-    painter.drawLine(QPointF(0,200), QPointF(400,200));
-    painter.end();
-
-
-    // For horizon moving parts
-    innerCircleRect = QRect(-INNERCIRCLERADIUS, -INNERCIRCLERADIUS,
-                            INNERCIRCLERADIUS*2, INNERCIRCLERADIUS*2 );
-
-    // Inidcator points
+    // INDICATOR POINTS
     indicatorTriangle[0]    = QPointF(-20, INNERCIRCLERADIUS);
     indicatorTriangle[1]    = QPointF(20, INNERCIRCLERADIUS);
     indicatorTriangle[2]    = QPointF(0, INNERCIRCLERADIUS-35);
@@ -122,7 +107,7 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     indicatorLines[3]       = QLineF(-25, 0, 0, 25);
     indicatorLines[4]       = QLineF(25, 0, 0, 25);
 
-    // Graduated scale
+    // SCALE POINTS
     scaleLines[0]   = QLineF(-10, -5, 10, -5);
     scaleLines[1]   = QLineF(-35, -10, 35, -10);
     scaleLines[2]   = QLineF(-10, -15, 10, -15);
@@ -136,6 +121,30 @@ ArtificialHorizon::ArtificialHorizon(QWidget *parent) :
     scaleLines[9]   = QLineF(-45, 20, 45, 20);
     scaleLines[10]  = QLineF(-10, 25, 10, 25);
     scaleLines[11]  = QLineF(-55, 30, 55, 30);
+
+    // MOVING PIXMAP
+    movingPixmap = QPixmap(400,400);
+    painter.begin(&(this->movingPixmap));
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.fillRect(QRect(0,0,400,200), skyBrush);
+    painter.fillRect(QRect(0,200,400,200), groundBrush);
+    painter.setPen(linePen);
+    painter.drawLine(QPointF(0,200), QPointF(400,200));
+    // Scale
+    painter.setPen(scalePen);
+    painter.save();
+    painter.translate(200,200);
+    painter.drawLines(scaleLines, 12);
+    painter.restore();
+    painter.save();
+    painter.translate(200, 20);
+    painter.drawLines(scaleLines+6, 6);
+    painter.restore();
+    painter.save();
+    painter.translate(200, 380);
+    painter.drawLines(scaleLines, 6);
+    painter.restore();
+    painter.end();
 }
 
 void ArtificialHorizon::setRollPitch(double roll, double pitch)
@@ -174,16 +183,6 @@ void ArtificialHorizon::paint(QPainter *painter, QPaintEvent *event)
                 movingPixmap,
                 QRect(100,100-pitch, 200,200)
                 );
-    painter->restore();
-
-    // SCALE
-    painter->save();
-    painter->translate(WIDGETSIZE/2, WIDGETSIZE/2+pitch);
-    //painter->rotate(roll);
-    QRegion region(innerCircleRect, QRegion::Ellipse);
-    painter->setClipRegion(region);
-    painter->setPen(scalePen);
-    painter->drawLines(scaleLines, 12);
     painter->restore();
 
     // FOREGROUND IMAGE
